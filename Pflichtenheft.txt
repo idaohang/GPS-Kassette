@@ -1,0 +1,60 @@
+Peripherie:
+-----------
+Schalter (Deckel offen/geschlossen)
+2 Taster (Lock/GPS, siehe Anwendungsfälle)
+2 LED (rot/grün)
+Anzeige
+
+
+Begriffe:
+---------
+Bestimmungsort: Der festgelegte Ort, an dem die Kassette aufgehen soll.
+Verschließen/Verriegeln: Wenn die Kassette "zusperrt".
+
+
+Mögliche Zustände:
+------------------
+
+- Verriegelt => nicht am Bestimmungsort
+Nur die rote LED leuchtet.
+
+- Am Bestimmungsort <=> nicht verriegelt
+Nur die grüne LED leuchtet.
+
+- Nicht am Bestimmungsort && nicht verriegelt
+Rote UND grüne LEDs leuchten.
+
+- Deckel geöffnet
+Keine LED leuchtet.
+
+
+
+
+Anwendungsfall 1: Kassette verschließen
+=======================================
+Durch den Lock-Taster wird die Kassette verriegelt. Sie kann nur verriegelt werden, wenn sie sich NICHT am Bestimmungsort befindet UND der Deckel geschlossen ist (andernfalls ist der Lock-Taster wirkungslos).
+
+Vorteil des Lock-Taster:
+* Kein versehentliches Verriegeln während den Arbeiten
+* Transport zum Arbeitsplatz möglich, ohne Deckel dabei offen halten zu müssen.
+
+
+Anwendungsfall 2: Kassette öffnen
+=================================
+Die Kassette entriegelt sich automatisch, sobald sie sich am Bestimmungsort befindet.
+
+
+Anwendungsfall 3: GPS-Signalstärke abfragen
+===========================================
+Solange der GPS-Taster gedrückt ist, wird -- statt der Distanz zum Bestimmungsort -- die Signalstärke angezeigt.
+
+z.B. so:
+- - -    > voller Empfang
+- -      > ...
+-        > schlechter Empfang
+         > kein Empfang
+		 
+		 
+Anwendungsfall 4: Bestimmungsort festlegen
+==========================================
+Die GPS-Koordinaten werden seriell (z.B. via HyperTerminal oder PuTTY) vom PC zur Kassette übermittelt.
