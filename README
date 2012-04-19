@@ -1,1 +1,4 @@
-Die GPS-Kassette oeffnet sich nur an ihrem Bestimmungsort.
+Die GPS-Kassette öffnet sich nur an ihrem Bestimmungsort.
+
+Um den Code zu modularisieren, ist er in Header-Dateien aufgeteilt.
+Normale C-Dateien für den Arduino wären umständlich zu compilieren und linken.
