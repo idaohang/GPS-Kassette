@@ -1,5 +1,5 @@
-#IFNDEF GPS_H
-#DEFINE GPS_H
+#ifndef GPS_H
+#define GPS_H
 
 static double calcDistance(double lat1, double lat2, double long1, double long2) {
 
@@ -21,4 +21,4 @@ boolean amBestimungsort(int abstand)
 	return (abstand <= 10);
 }
 
-#ENDIF
+#endif

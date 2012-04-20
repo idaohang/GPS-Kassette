@@ -1,5 +1,5 @@
-#IFNDEF STATE_H
-#DEFINE STATE_H
+#ifndef STATE_H
+#define STATE_H
 
 #define OPEN 0
 #define LOCKED 1
@@ -42,4 +42,4 @@ char getState(char oldState, boolean deckeltaster, boolean taster, boolean besti
 	return state;
 }
 
-#ENDIF
+#endif

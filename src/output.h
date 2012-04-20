@@ -1,5 +1,5 @@
-#IFNDEF OUTPUT_H
-#DEFINE OUTPUT_H
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
 void output(char state, int abstand, boolean taster)
 {
@@ -31,4 +31,4 @@ void output(char state, int abstand, boolean taster)
 	}
 }
 
-#ENDIF
+#endif
