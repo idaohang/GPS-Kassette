@@ -1,4 +1,10 @@
 Die GPS-Kassette öffnet sich nur an ihrem Bestimmungsort.
 
 Um den Code zu modularisieren, ist er in Header-Dateien aufgeteilt.
-Normale C-Dateien für den Arduino wären umständlich zu compilieren und linken.
+Normale C-Dateien wären möglicherweise umständlich zu compilieren und linken.
+
+Die Arduino IDE erwartet die Quellen in einem Verzeichnis sketchbook/GPS-Kassette/main/.
+
+Die Hauptquelldatei (.ino ab arduino-1.0, vorher .pde), darf nicht main heißen,
+weil das wohl zu einem Konflikt mit der "Template Method" Datei main.cpp führt,
+die setup und loop aus der Hauptquelldatei aufruft.
