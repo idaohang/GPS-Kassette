@@ -7,19 +7,25 @@
 // Konstanten fuer Uebertragung
 #define ANFANG 'A'
 
-void waitForInput()
+/*
+ * A blocking version of Serial.read()
+ * Returns -1, when timed out
+ */
+int blockSerialRead(unsigned timeout)
 {
   unsigned mils = millis();
-  while (!Serial.available() && (millis() - mils) < TIMEOUT);
+  while (!Serial.available() && (millis() - mils) < timeout);
+  return Serial.read();
 }
 
 void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
 {
   char c;
-  int i, k, flag=0;
+  int i, k;
   char s[2][DIGITS];
         float d1, d2;
   boolean finished = false;
+  boolean abort = false;
   while (!finished)
   {
     Serial.println("Willkommen bei der GPS-Kassette!");
@@ -27,10 +33,9 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
     Serial.println(" * Koordinateneingabe (k)");
     Serial.println(" * Entsperren (u)");
     Serial.println(" * Beenden (q)");
-    Serial.println("");
-                waitForInput();
-                c = Serial.read();
-                //Serial.println("%c", c);
+    Serial.println("");                
+    c = blockSerialRead(TIMEOUT);
+    //Serial.println("%c", c);
     switch (c)
     {
       case 'k':
@@ -38,20 +43,20 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
         Serial.println("\n> ");
         i = 0;
         k = 0;
-        while (k < 2)
-        {
-          waitForInput();
-          c = Serial.read();
+        while (k < 2 && !abort)
+        {          
+          c = blockSerialRead(TIMEOUT);
           switch (c)
           {
-            case -1: 
-              flag=1;
+            case -1: // timeout
+            case 27: // escape
+              abort = true;
               break;
             case ',': 
             case '\n':
             case '\r':
             case ';':
-              s[k][i] = 0;
+              s[k][i] = 0; // string abschliessen
               i = 0;
               k++;
               break;
@@ -61,18 +66,18 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
           }
         }
         
-        if(!flag)
+        if(!abort)
         {
-          Serial.println("Koordinaten:");
-          Serial.println(s[0]);
-          Serial.println(s[1]);
-        
           d1 = atof(s[0]);
           d2 = atof(s[1]);
           if (d1 && d2)
           {
             *long_Ziel = d1;
             *lat_Ziel = d2;
+            
+            Serial.println("Koordinaten:");
+            Serial.println(s[0]);
+            Serial.println(s[1]);
           }
           else
           {
@@ -82,15 +87,15 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
         break;
       case 'u':
       case 'U':
-        Serial.println("Unlocking...");
         *unlock = 1;
+        Serial.println("Aufgesperrt");
         break;
       case 'q':
       case 'Q':
-      case 27:
-      case -1:
-        Serial.println("Uebertragung beenden...");
+      case 27: // escape
+      case -1: // timeout
         finished = true;
+        Serial.println("Uebertragung beendendet");
         break;
     }
   }
