@@ -23,12 +23,14 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
   char c;
   int i, k;
   char s[2][DIGITS];
-        float d1, d2;
+  float d1, d2;
   boolean finished = false;
   boolean abort = false;
+  
+  Serial.println("Willkommen bei der GPS-Kassette!");
   while (!finished)
   {
-    Serial.println("Willkommen bei der GPS-Kassette!");
+    Serial.println("Bitte waehlen Sie:");
     Serial.println("");
     Serial.println(" * Koordinateneingabe (k)");
     Serial.println(" * Entsperren (u)");

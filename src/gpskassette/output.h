@@ -39,29 +39,34 @@ void outputs(char state, int abstand, boolean taster)
   switch (state)
   {
     case LOCKED:
-      digitalWrite(RED_PIN,HIGH);      //Rote LED   an    
+      //servo. TODO verriegeln
+      digitalWrite(RED_PIN,HIGH);      //Rote LED an
       if (amBestimmungsort(abstand))
         digitalWrite(GREEN_PIN, blinky);     // set the LED on
-    else
-      digitalWrite(GREEN_PIN,LOW);      //gruene LED aus
+      else
+        digitalWrite(GREEN_PIN,LOW);      //gruene LED aus
+
       break;
       
     case UNLOCKED:
+      //servo. TODO entriegeln
       digitalWrite(GREEN_PIN,HIGH);      // gruene LED an
     
       if (!amBestimmungsort(abstand))
-    {
+      {
         digitalWrite(RED_PIN, blinky);       // set the LED on
-    }
-    else
-      digitalWrite(RED_PIN,LOW);        // rote LED aus                
+      }
+      else
+        digitalWrite(RED_PIN,LOW);        // rote LED aus
+
       break;
       
     case OPEN:
+      //servo. TODO entriegeln
       digitalWrite(GREEN_PIN,HIGH);      // gruene LED an
-    digitalWrite(RED_PIN,LOW);        // rote LED aus
+      digitalWrite(RED_PIN,LOW);        // rote LED aus
       lcd.clear();                // Display aus
-    delay(100);            
+      delay(100);
       break;
         
     default:

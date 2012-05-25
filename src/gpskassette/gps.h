@@ -3,9 +3,10 @@
 
 TinyGPS gps;
 
-static float getDistance(float lat_Ziel, float long_Ziel)
+float getDistance(float lat_Ziel, float long_Ziel)
 {  
-  float lat_Position=0,long_Position=0;
+  float lat_Position = 0;
+  float long_Position = 0;
   unsigned long age;
   gps.f_get_position(&lat_Position, &long_Position, &age);
   // TODO sonderfall: kein signal abfangen
