@@ -5,7 +5,7 @@
 #include "gps.h"
 #include "state.h"
 #include "output.h"
-#include "menue.h"
+#include "menu.h"
 
 // externer Interrupt: PIN 2
 #define PIN2_NUMBER 0
@@ -24,35 +24,34 @@ Servo servo;
 
 void ISR_Taster(void)
 {
-	taster = true;
+  taster = true;
 }
 
 void setup()
 {
-	lcdSetup();					//LCD-Display Setup 
-	servo.attach(14);
-	Serial.begin(9600);
-	attachInterrupt(PIN2_NUMBER, &ISR_Taster, RISING);
+  lcdSetup();	//LCD-Display Setup 
+  servo.attach(14);
+  Serial.begin(9600);
+  attachInterrupt(PIN2_NUMBER, &ISR_Taster, RISING);
 }
 
 void loop()
 {
   static char oldState = OPEN;
-  char state;
-  int abstand;
+ 
   boolean unlock = false;
-  boolean deckeltaster = false;
-
-  deckeltaster = digitalRead(PIN_DECKELTASTER);
-  abstand = int (getDistance(long_Ziel, lat_Ziel));
-  state = getState(unlock, oldState, deckeltaster, taster, amBestimmungsort(abstand));
-  
-  ausgabe(state , abstand , taster);
-  
   if (Serial.read() == ANFANG)
-    menue(&unlock, &long_Ziel, &lat_Ziel);
+    menu(&unlock, &long_Ziel, &lat_Ziel);
+
+  boolean deckeltaster = digitalRead(PIN_DECKELTASTER);
+  int abstand = int(getDistance(long_Ziel, lat_Ziel));
+  
+  char state = getState(oldState, unlock, deckeltaster, taster, amBestimmungsort(abstand));
+  
+  outputs(state , abstand , taster);
 
   taster = false; // reset our interrupt flag  
+  
   oldState = state;
 
 }

@@ -5,7 +5,7 @@
 #define LOCKED 1
 #define UNLOCKED 2
 
-char getState(boolean unlock, char oldState, boolean deckeltaster, boolean taster, boolean bestimmungsort)
+char getState(char oldState, boolean unlock, boolean deckeltaster, boolean taster, boolean bestimmungsort)
 {
   char state= UNLOCKED;
 
