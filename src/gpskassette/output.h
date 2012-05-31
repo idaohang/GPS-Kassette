@@ -3,82 +3,90 @@
 
 #define MAX_ULONG 4294967295
 
-// TODO pin werte rausfinden
-#define RED_PIN 7
-#define GREEN_PIN 6
+#define PIN_GREEN 6
+#define PIN_RED   7
 
 #define BLINK_DELAY 500
 
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);    // initialize the LiquidCrystal library with the numbers of the interface pins
-
-void lcdSetup(void){
-  lcd.begin(20, 2);
-  lcd.clear();
-  delay(100);
+void lcdClearIfFlag(boolean *flag)
+{
+  if (*flag)
+  {
+    lcd.clear();
+    *flag = false;
+    delay(100);
+  }
 }
 
-void outputs(char state, int abstand, boolean taster)
+void outputs(char state, char oldState, int abstand, boolean taster)
 {
 
-  static boolean blinky = 0;
+  static boolean blinky = false;
   static unsigned long oldMils = 0;
   unsigned long mils = millis();
   if (oldMils > mils)
     mils = oldMils + MAX_ULONG;
   if ((mils - oldMils) >= BLINK_DELAY)
+  {
     blinky = !blinky;
-  oldMils = mils;
+    oldMils = mils;
+  }
+  
 
   // Ausgaenge setzen
     
-  lcd.clear();   //Abstand auf LCD anzeigen
-  delay(100);
-  lcd.print("Abstand: ");
-  lcd.print(abstand);  
+  //lcdClearIfFlag(lcdClear);   //Abstand auf LCD anzeigen
+  
+  lcd.print("Abstand:             ");
+  lcd.setCursor(9, 0);  
+  lcd.print(abstand);
+  delay(200);
   
   switch (state)
   {
     case LOCKED:
-      //servo. TODO verriegeln
-      digitalWrite(RED_PIN,HIGH);      //Rote LED an
+      if (oldState == UNLOCKED)
+        ;//servo. TODO verriegeln
+      digitalWrite(PIN_RED,HIGH);      //Rote LED an
       if (amBestimmungsort(abstand))
-        digitalWrite(GREEN_PIN, blinky);     // set the LED on
+        digitalWrite(PIN_GREEN, blinky ? HIGH : LOW);     // set the LED on
       else
-        digitalWrite(GREEN_PIN,LOW);      //gruene LED aus
+        digitalWrite(PIN_GREEN,LOW);      //gruene LED aus
 
       break;
       
     case UNLOCKED:
-      //servo. TODO entriegeln
-      digitalWrite(GREEN_PIN,HIGH);      // gruene LED an
+      if (oldState == LOCKED)
+        ;//servo. TODO entriegeln
+      digitalWrite(PIN_GREEN, HIGH);      // gruene LED an
     
       if (!amBestimmungsort(abstand))
       {
-        digitalWrite(RED_PIN, blinky);       // set the LED on
+        digitalWrite(PIN_RED, blinky ? HIGH : LOW);       // set the LED on
       }
       else
-        digitalWrite(RED_PIN,LOW);        // rote LED aus
+        digitalWrite(PIN_RED,LOW);        // rote LED aus
 
       break;
       
     case OPEN:
-      //servo. TODO entriegeln
-      digitalWrite(GREEN_PIN,HIGH);      // gruene LED an
-      digitalWrite(RED_PIN,LOW);        // rote LED aus
+      digitalWrite(PIN_GREEN,HIGH);      // gruene LED an
+      digitalWrite(PIN_RED,LOW);        // rote LED aus
       lcd.clear();                // Display aus
       delay(100);
       break;
         
     default:
-      lcd.clear();
+      //blinky = true;
+      digitalWrite(PIN_RED, blinky ? HIGH : LOW);       //Beide LEDs Blinken      
+      digitalWrite(PIN_GREEN, blinky ? HIGH : LOW);
+    
+      //lcd.clear();
       delay(100);
       lcd.print("Fehler!!!!");        // Ungueltiger Zustand: Fehlermeldung auf Bildschirm, Reset...
       lcd.setCursor(0, 1);
       lcd.print("Reset druecken");
 
-      digitalWrite(RED_PIN, blinky);       //Beide LEDs Blinken      
-      digitalWrite(GREEN_PIN, blinky);
-                
       break;
   }
 }
