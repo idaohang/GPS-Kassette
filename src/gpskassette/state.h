@@ -9,11 +9,11 @@ char getState(char oldState, boolean unlock, boolean deckeltaster, boolean taste
 {
   char state= UNLOCKED;
 
-  if (!deckeltaster)
-    state = OPEN;
-    
-  else if (unlock)
+  if (unlock)
     state = UNLOCKED;
+
+  else if (!deckeltaster)
+    state = OPEN;
 
   // Deckel ist zu
   else if (bestimmungsort)
@@ -39,7 +39,7 @@ char getState(char oldState, boolean unlock, boolean deckeltaster, boolean taste
     if (oldState == LOCKED)    
       state = LOCKED;
 
-    else if (taster) // && deckeltaster
+    else if (deckeltaster && taster)
       state = LOCKED;
   }
 

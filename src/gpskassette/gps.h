@@ -3,32 +3,25 @@
 
 TinyGPS gps;
 
-float getDistance(float lat_Ziel, float long_Ziel)
-{  
-  float lat_Position = 0;
-  float long_Position = 0;
-  unsigned long fix_age;
-  gps.f_get_position(&lat_Position, &long_Position, &fix_age);
-  
-  // TODO sonderfall: kein signal abfangen
-  if (fix_age == TinyGPS::GPS_INVALID_AGE)
-    Serial.println("No fix detected");
-  else if (fix_age > 5000)
-    Serial.println("Warning: possible stale data!");
-  else
-    Serial.println("Data is current.");
-  
-  lcd.setCursor(0, 1);
-  lcd.print(lat_Position);
-  lcd.print(",");
-  lcd.print(long_Position);
-//  delay(
-  
-  float dx = 71.5 * (long_Ziel - long_Position);
-  float dy = 111.3 * (lat_Ziel - lat_Position);
-  float dist = sqrt(dx * dx + dy * dy);  
-  return dist;
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
+float getDistance(float lat_Ziel, float long_Ziel, float oldDistance)
+{
+  float dist = oldDistance;  
+  while(Serial.available())     // While there is data on the RX pin
+  {
+    char c = Serial.read();    // load the data into a variable
+    if(gps.encode(c))      // if there is a new valid sentence
+    {
+      float lat_Position = 0;
+      float long_Position = 0;
+      gps.f_get_position(&lat_Position, &long_Position);
+      float dx = 71.5 * (long_Ziel - long_Position);
+      float dy = 111.3 * (lat_Ziel - lat_Position);
+      dist = sqrt(dx * dx + dy * dy) * 1000;
+    }
+  }
+  return dist;
 }
 
 boolean amBestimmungsort(int abstand)

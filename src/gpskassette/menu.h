@@ -2,31 +2,33 @@
 #define MENUE_H
 
 #define DIGITS 15
-#define TIMEOUT 20000
+#define TIMEOUT 10000
 
 // Konstanten fuer Uebertragung
-#define ANFANG 'A'
+//#define ANFANG '<'
 
 /*
  * A blocking version of Serial.read()
  * Returns -1, when timed out
  */
-int blockSerialRead(unsigned long timeout)
+int blockSerialRead(unsigned timeout)
 {
-  unsigned long mils = millis();
-  while (!Serial.available() && (millis() - mils) < timeout); // Serial.println("waiting");
+  unsigned mils = millis();
+  while (!Serial.available() && (millis() - mils) < timeout);
   return Serial.read();
 }
 
 void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
 {
   char c;
-  char t[2] = { 0 };
   int i, k;
   char s[2][DIGITS];
   float d1, d2;
   boolean finished = false;
   boolean abort = false;
+  
+  Serial.end();
+  Serial.begin(9600);
   
   Serial.println("Willkommen bei der GPS-Kassette!");
   while (!finished)
@@ -38,8 +40,7 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
     Serial.println(" * Beenden (q)");
     Serial.println("");                
     c = blockSerialRead(TIMEOUT);
-    t[0] = c;
-    Serial.println(t);
+    //Serial.println("%c", c);
     switch (c)
     {
       case 'k':
@@ -99,10 +100,13 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
       case 27: // escape
       case -1: // timeout
         finished = true;
-        Serial.println("Uebertragung beendet");
+        Serial.println("Uebertragung beendendet");
         break;
     }
   }
+  
+  Serial.end();
+  Serial.begin(4800);
 }
 
 #endif

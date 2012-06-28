@@ -2,74 +2,90 @@
 #include <Servo.h>
 #include <LiquidCrystal.h>
 
-
-// externer Interrupt: PIN 2
-#define PIN_TASTER       9 // 2 (INTR) ist schon belegt durch Display
-
-#define PIN_DECKELTASTER 8
- 
-#define MAX_ULONG 4294967295
-
-// Flag wird von Taster-Interrupt gesetzt
-static boolean taster = false;
-
-static float long_Ziel = 48.154155;
-static float lat_Ziel  = 11.555362;
-
-Servo servo;
-
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);    // initialize the LiquidCrystal library with the numbers of the interface pins
-
-
-
-#include "state.h"
 #include "gps.h"
+#include "state.h"
 #include "output.h"
 #include "menu.h"
 
+#define PIN_DECKELTASTER 8
+#define PIN_TASTER 9
 
-void lcdSetup(void){
-  lcd.begin(20, 2);
-  lcd.clear();
-  delay(100);
-}
 
-void ISR_Taster(void)
-{
-  taster = true;
-}
+ 
+#define MAX_ULONG 4294967295
+
+static float long_Ziel = 11.554054, lat_Ziel = 48.153873;
 
 void setup()
 {
-  pinMode(PIN_RED, OUTPUT);
-  pinMode(PIN_GREEN, OUTPUT);
-
+  lcdSetup();	//LC-Display Setup 
+  
+  servo.attach(14);
+  
+  Serial.begin(4800);
+  
+  pinMode(RED_PIN, OUTPUT);
+  pinMode(GREEN_PIN, OUTPUT);
+  
   pinMode(PIN_DECKELTASTER, INPUT);
   pinMode(PIN_TASTER, INPUT);
-
-  lcdSetup();	//LCD-Display Setup 
-  servo.attach(14);
-  Serial.begin(9600);
-  //attachInterrupt(PIN_TASTER, &ISR_Taster, RISING);
 }
 
 void loop()
 {
   static char oldState = OPEN;
- 
-  boolean unlock = false;
-  if (Serial.read() == ANFANG)
-    menu(&unlock, &long_Ziel, &lat_Ziel);
-
-  boolean deckeltaster = digitalRead(PIN_DECKELTASTER);
-  taster = digitalRead(PIN_TASTER);
-  int abstand = int(getDistance(long_Ziel, lat_Ziel));
+  static float abstand;
+  boolean unlock = false; 
   
-  char state = getState(oldState, unlock, deckeltaster, taster, amBestimmungsort(abstand));
+  unsigned milis;
+  
+  static boolean taster = false;
+  boolean tasterRising = false;
+  boolean tasterFalling = false;   
     
-  outputs(state, oldState, abstand, taster);
+  boolean deckeltaster = !digitalRead(PIN_DECKELTASTER); // Taster Low-aktiv
+  
+  if (!digitalRead(PIN_TASTER)) // Taster Low-aktiv
+  {
+    if (!taster)
+      tasterRising = true;
+      
+    taster = true;
+  }
+  else
+  {
+    if (taster)
+      tasterFalling = true;
+      
+    taster = false;
+  }
+    
+  // Menue starten, wenn Taster 2 s gedrueckt bleibt.
+  if (tasterRising)
+  {
+    milis = millis();
+  }
+  else if (taster)
+  {
+    if(millis() - milis >= 2000)
+    {      
+      menu(&unlock, &long_Ziel, &lat_Ziel);      
+    }
+  }
+    
+  // VORHER:
+  //if (Serial.read() == ANFANG)
+  /* if (tasterSerial)
+    menu(&unlock, &long_Ziel, &lat_Ziel); */
+  
+  abstand = getDistance(lat_Ziel, long_Ziel, abstand);
+  abstand = abstand + .00001;  
+  char state = getState(oldState, unlock, deckeltaster, tasterFalling, amBestimmungsort(abstand));
 
-  taster = false; // reset our flag  
+  outputs(oldState, state , int(abstand), taster);
+
+
+  // Ende der Schleife:
   
   oldState = state;
 

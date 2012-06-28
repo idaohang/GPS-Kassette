@@ -1,92 +1,118 @@
+
+
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
 #define MAX_ULONG 4294967295
 
-#define PIN_GREEN 6
-#define PIN_RED   7
+
+#define GREEN_PIN 6
+#define RED_PIN 7
+
+#define ENTRIEGELUNG 0
+#define VERRIEGELUNG 180
 
 #define BLINK_DELAY 500
 
-void lcdClearIfFlag(boolean *flag)
-{
-  if (*flag)
-  {
-    lcd.clear();
-    *flag = false;
-    delay(100);
-  }
+Servo servo;
+
+void lcdSetup(void){
+  lcd.begin(20, 2);
+  lcd.clear();
+  delay(100);
 }
 
-void outputs(char state, char oldState, int abstand, boolean taster)
+void outputs(char oldState, char state, int abstand, boolean taster)
 {
-
-  static boolean blinky = false;
+  static int oldAbstand = 0;
+  static boolean blinky = 0;
   static unsigned long oldMils = 0;
   unsigned long mils = millis();
   if (oldMils > mils)
     mils = oldMils + MAX_ULONG;
   if ((mils - oldMils) >= BLINK_DELAY)
-  {
     blinky = !blinky;
-    oldMils = mils;
-  }
-  
+  oldMils = mils;
 
   // Ausgaenge setzen
     
-  //lcdClearIfFlag(lcdClear);   //Abstand auf LCD anzeigen
+  //lcd.clear();   //Abstand auf LCD anzeigen
+  //delay(100);
+  if(abstand != oldAbstand)
+  {
+    lcd.setCursor(0,0);
+    lcd.print("Abstand: ");
+    lcd.print(abstand);
+    lcd.print(" m            ");
+    oldAbstand = abstand;
+  }
   
-  lcd.print("Abstand:             ");
-  lcd.setCursor(9, 0);  
-  lcd.print(abstand);
-  delay(200);
+  if (amBestimmungsort(abstand))      
+    digitalWrite(GREEN_PIN, HIGH);       // set the LED on
+  else    
+    digitalWrite(GREEN_PIN, LOW);       // set the LED on
   
   switch (state)
   {
     case LOCKED:
-      if (oldState == UNLOCKED)
-        ;//servo. TODO verriegeln
-      digitalWrite(PIN_RED,HIGH);      //Rote LED an
+      //servo. verriegeln
+      if (oldState != LOCKED)
+      {
+        servo.write(VERRIEGELUNG);
+        delay(800);
+      }
+      
+      
+      digitalWrite(RED_PIN, HIGH);      //Rote LED an
+      /*
       if (amBestimmungsort(abstand))
-        digitalWrite(PIN_GREEN, blinky ? HIGH : LOW);     // set the LED on
+        digitalWrite(GREEN_PIN, blinky);     // set the LED on
       else
-        digitalWrite(PIN_GREEN,LOW);      //gruene LED aus
-
+        digitalWrite(GREEN_PIN, LOW);      //gruene LED aus
+*/
       break;
       
     case UNLOCKED:
-      if (oldState == LOCKED)
-        ;//servo. TODO entriegeln
-      digitalWrite(PIN_GREEN, HIGH);      // gruene LED an
-    
+      //servo. entriegeln
+      if (oldState != OPEN && oldState != UNLOCKED)
+      {
+        servo.write(ENTRIEGELUNG);
+        delay(800);
+      }
+      digitalWrite(RED_PIN, LOW);      //Rote LED an
+/*      digitalWrite(GREEN_PIN, HIGH);      // gruene LED an  
       if (!amBestimmungsort(abstand))
       {
-        digitalWrite(PIN_RED, blinky ? HIGH : LOW);       // set the LED on
+        digitalWrite(RED_PIN, blinky);       // set the LED on
       }
       else
-        digitalWrite(PIN_RED,LOW);        // rote LED aus
-
+        digitalWrite(RED_PIN, LOW);        // rote LED aus
+*/
       break;
       
     case OPEN:
-      digitalWrite(PIN_GREEN,HIGH);      // gruene LED an
-      digitalWrite(PIN_RED,LOW);        // rote LED aus
-      lcd.clear();                // Display aus
-      delay(100);
+      //servo. entriegeln
+      if (oldState != OPEN && oldState != UNLOCKED)
+      {
+        servo.write(ENTRIEGELUNG);
+        delay(800);
+      }
+      /*
+      digitalWrite(GREEN_PIN, HIGH);      // gruene LED an
+      digitalWrite(RED_PIN, LOW);        // rote LED aus
+      */
       break;
         
     default:
-      //blinky = true;
-      digitalWrite(PIN_RED, blinky ? HIGH : LOW);       //Beide LEDs Blinken      
-      digitalWrite(PIN_GREEN, blinky ? HIGH : LOW);
-    
-      //lcd.clear();
+      lcd.clear();
       delay(100);
       lcd.print("Fehler!!!!");        // Ungueltiger Zustand: Fehlermeldung auf Bildschirm, Reset...
       lcd.setCursor(0, 1);
       lcd.print("Reset druecken");
 
+      digitalWrite(RED_PIN, blinky);       //Beide LEDs Blinken      
+      digitalWrite(GREEN_PIN, blinky);
+                
       break;
   }
 }
