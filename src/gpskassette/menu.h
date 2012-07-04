@@ -13,7 +13,7 @@
  */
 int blockSerialRead(unsigned timeout)
 {
-  unsigned mils = millis();
+  unsigned long mils = millis();
   while (!Serial.available() && (millis() - mils) < timeout);
   return Serial.read();
 }

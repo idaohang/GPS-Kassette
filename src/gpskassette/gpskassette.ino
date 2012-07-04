@@ -37,7 +37,7 @@ void loop()
   static float abstand;
   boolean unlock = false; 
   
-  unsigned milis;
+  unsigned long milis;
   
   static boolean taster = false;
   boolean tasterRising = false;
