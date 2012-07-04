@@ -1,10 +1,5 @@
-
-
 #ifndef OUTPUT_H
 #define OUTPUT_H
-
-#define MAX_ULONG 4294967295
-
 
 #define GREEN_PIN 6
 #define RED_PIN 7
@@ -23,21 +18,21 @@ void lcdSetup(void){
 }
 
 void outputs(char oldState, char state, int abstand, boolean taster)
-{
-  static int oldAbstand = 0;
+{    
   static boolean blinky = 0;
   static unsigned long oldMils = 0;
-  unsigned long mils = millis();
-  if (oldMils > mils)
-    mils = oldMils + MAX_ULONG;
+  unsigned long mils = millis();  
   if ((mils - oldMils) >= BLINK_DELAY)
+  {
     blinky = !blinky;
-  oldMils = mils;
+    oldMils = mils; // Bugfixed, but not tested
+  }
 
   // Ausgaenge setzen
     
   //lcd.clear();   //Abstand auf LCD anzeigen
   //delay(100);
+  static int oldAbstand = 0;
   if(abstand != oldAbstand)
   {
     lcd.setCursor(0,0);
