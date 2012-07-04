@@ -59,12 +59,7 @@ void outputs(char oldState, char state, int abstand, boolean taster)
       
       
       digitalWrite(RED_PIN, HIGH);      //Rote LED an
-      /*
-      if (amBestimmungsort(abstand))
-        digitalWrite(GREEN_PIN, blinky);     // set the LED on
-      else
-        digitalWrite(GREEN_PIN, LOW);      //gruene LED aus
-*/
+
       break;
       
     case UNLOCKED:
@@ -75,14 +70,7 @@ void outputs(char oldState, char state, int abstand, boolean taster)
         delay(800);
       }
       digitalWrite(RED_PIN, LOW);      //Rote LED an
-/*      digitalWrite(GREEN_PIN, HIGH);      // gruene LED an  
-      if (!amBestimmungsort(abstand))
-      {
-        digitalWrite(RED_PIN, blinky);       // set the LED on
-      }
-      else
-        digitalWrite(RED_PIN, LOW);        // rote LED aus
-*/
+
       break;
       
     case OPEN:
@@ -92,10 +80,7 @@ void outputs(char oldState, char state, int abstand, boolean taster)
         servo.write(ENTRIEGELUNG);
         delay(800);
       }
-      /*
-      digitalWrite(GREEN_PIN, HIGH);      // gruene LED an
-      digitalWrite(RED_PIN, LOW);        // rote LED aus
-      */
+
       break;
         
     default:
