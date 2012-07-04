@@ -20,17 +20,13 @@ int blockSerialRead(unsigned timeout)
 
 void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
 {
-  char c;
-  int i, k;
-  char s[2][DIGITS];
-  float d1, d2;
-  boolean finished = false;
-  boolean abort = false;
   
+  // Von GPS auf PC/Seriell umschalten
   Serial.end();
   Serial.begin(9600);
   
   Serial.println("Willkommen bei der GPS-Kassette!");
+  boolean finished;
   while (!finished)
   {
     Serial.println("Bitte waehlen Sie:");
@@ -39,15 +35,25 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
     Serial.println(" * Entsperren (u)");
     Serial.println(" * Beenden (q)");
     Serial.println("");                
-    c = blockSerialRead(TIMEOUT);
-    //Serial.println("%c", c);
+    
+    char c = blockSerialRead(TIMEOUT);
+    //Serial.println("%c", c); // echo off -- terminal should do this job.
+
+    boolean abort = false;    
+    char s[2][DIGITS];
+    int i, k;
+
     switch (c)
     {
       case 'k':
       case 'K':
-        Serial.println("\n> ");
+        // Koordinateneingabe
+        Serial.print("\n> ");
+        
         i = 0;
         k = 0;
+        
+        // 2 Koordinaten, mit Trennzeichen getrennt
         while (k < 2 && !abort)
         {          
           c = blockSerialRead(TIMEOUT);
@@ -66,6 +72,7 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
               k++;
               break;
             default:
+              // Eingabe in Buffer
               s[k][i++] = c;
               break;
           }
@@ -73,14 +80,15 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
         
         if(!abort)
         {
-          d1 = atof(s[0]);
-          d2 = atof(s[1]);
+          float d1 = atof(s[0]);
+          float d2 = atof(s[1]);
           if (d1 && d2)
           {
             *long_Ziel = d1;
             *lat_Ziel = d2;
             
-            Serial.println("Koordinaten:");
+            Serial.println("Ihre Koordinaten:");
+            // Evtl. d1 und d2, statt original Eingaben
             Serial.println(s[0]);
             Serial.println(s[1]);
           }
@@ -105,6 +113,7 @@ void menu(boolean* unlock, float* long_Ziel, float* lat_Ziel)
     }
   }
   
+  // Wieder umschalten auf GPS
   Serial.end();
   Serial.begin(4800);
 }

@@ -10,10 +10,6 @@
 #define PIN_DECKELTASTER 8
 #define PIN_TASTER 9
 
-
- 
-#define MAX_ULONG 4294967295
-
 static float long_Ziel = 11.554054, lat_Ziel = 48.153873;
 
 void setup()
@@ -45,6 +41,7 @@ void loop()
     
   boolean deckeltaster = !digitalRead(PIN_DECKELTASTER); // Taster Low-aktiv
   
+  // taster-Variablen sind alle einfach lokal, werden also automatisch zurückgesetzt.
   if (!digitalRead(PIN_TASTER)) // Taster Low-aktiv
   {
     if (!taster)
@@ -59,7 +56,7 @@ void loop()
       
     taster = false;
   }
-    
+
   // Menue starten, wenn Taster 2 s gedrueckt bleibt.
   if (tasterRising)
   {
@@ -69,15 +66,11 @@ void loop()
   {
     if(millis() - milis >= 2000)
     {      
-      menu(&unlock, &long_Ziel, &lat_Ziel);      
+      menu(&unlock, &long_Ziel, &lat_Ziel);
+      // menu is blocking
     }
   }
-    
-  // VORHER:
-  //if (Serial.read() == ANFANG)
-  /* if (tasterSerial)
-    menu(&unlock, &long_Ziel, &lat_Ziel); */
-  
+ 
   abstand = getDistance(lat_Ziel, long_Ziel, abstand);
   abstand = abstand + .00001;  
   char state = getState(oldState, unlock, deckeltaster, tasterFalling, amBestimmungsort(abstand));
