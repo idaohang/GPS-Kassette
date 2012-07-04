@@ -1,47 +1,41 @@
 Peripherie:
 -----------
-Schalter (Deckel offen/geschlossen)
-2 Taster (Lock/GPS, siehe Anwendungsfälle)
+Taster ("Deckeltaster", Deckel offen/geschlossen)
+Taster ("Taster", Lock/Unlock/PC-Verbindung, siehe Anwendungsfälle)
 2 LED (rot/grün)
-Anzeige
+LC-Display
 
 
 Begriffe:
 ---------
 Bestimmungsort: Der festgelegte Ort, an dem die Kassette aufgehen soll.
-Verschließen/Verriegeln: Wenn die Kassette "zusperrt".
+Verschließen/Verriegeln: Wenn die Kassette "zusperrt". Nur möglich bei geschlossenem Deckel.
 
 
 Mögliche Zustände:
 ------------------
 
-- Verriegelt => nicht am Bestimmungsort
-Nur die rote LED leuchtet.
+- LOCKED: Deckel verschlossen
 
-- Am Bestimmungsort <=> nicht verriegelt
-Nur die grüne LED leuchtet.
+- UNLOCKED: Deckel unverschlossen aber zugeklappt
 
-- Nicht am Bestimmungsort && nicht verriegelt
-Rote UND grüne LEDs leuchten.
-
-- Deckel geöffnet
-Keine LED leuchtet.
+- OPEN: Deckel geöffnet
 
 
 
 
 Anwendungsfall 1: Kassette verschließen
 =======================================
-Durch den Lock-Taster wird die Kassette verriegelt. Sie kann nur verriegelt werden, wenn sie sich NICHT am Bestimmungsort befindet UND der Deckel geschlossen ist (andernfalls ist der Lock-Taster wirkungslos).
+Durch den Taster wird die Kassette verriegelt. Sie kann nur verriegelt werden, wenn der Deckel geschlossen ist.
 
-Vorteil des Lock-Taster:
-* Kein versehentliches Verriegeln während den Arbeiten
+Vorteil des Lock/Unlock-Tasters:
+* Kein versehentliches Verriegeln während den Arbeiten.
 * Transport zum Arbeitsplatz möglich, ohne Deckel dabei offen halten zu müssen.
 
 
 Anwendungsfall 2: Kassette öffnen
 =================================
-Die Kassette entriegelt sich automatisch, sobald sie sich am Bestimmungsort befindet.
+Durch den Taster kann die Kassette entriegelt werden, wenn sie sich am Bestimmungsort befindet.
 
 
 Anwendungsfall 3: GPS-Signalstärke abfragen
@@ -53,8 +47,9 @@ z.B. so:
 - -      > ...
 -        > schlechter Empfang
          > kein Empfang
-		 
-		 
+
+
 Anwendungsfall 4: Bestimmungsort festlegen
 ==========================================
 Die GPS-Koordinaten werden seriell (z.B. via HyperTerminal oder PuTTY) vom PC zur Kassette übermittelt.
+Die serielle PC-Verbindung wird aufgebaut, indem der Taster lange gedrückt wird.
